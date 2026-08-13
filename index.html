@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>HCartas AI | Automação de conteúdo para TikTok</title>
+
+  <meta name="description" content="HCartas AI é uma plataforma de criação, gerenciamento e publicação de conteúdo para criadores do TikTok.">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #080808;
+      color: #ffffff;
+      line-height: 1.6;
+    }
+
+    header {
+      border-bottom: 1px solid #222;
+      padding: 22px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #ff2d55;
+    }
+
+    nav a {
+      color: #ccc;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      color: #fff;
+    }
+
+    .hero {
+      min-height: 75vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .hero-content {
+      max-width: 850px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #171717;
+      border: 1px solid #333;
+      padding: 8px 15px;
+      border-radius: 30px;
+      color: #ff2d55;
+      font-size: 13px;
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 78px);
+      line-height: 1.05;
+      margin-bottom: 25px;
+    }
+
+    h1 span {
+      color: #ff2d55;
+    }
+
+    .hero p {
+      color: #aaa;
+      font-size: 19px;
+      max-width: 650px;
+      margin: 0 auto 35px;
+    }
+
+    .button {
+      display: inline-block;
+      background: #ff2d55;
+      color: white;
+      text-decoration: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    section {
+      padding: 80px 7%;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .section-title h2 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .section-title p {
+      color: #999;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .card {
+      background: #111;
+      border: 1px solid #252525;
+      border-radius: 14px;
+      padding: 30px;
+    }
+
+    .card-icon {
+      font-size: 30px;
+      margin-bottom: 18px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #999;
+      font-size: 15px;
+    }
+
+    .steps {
+      max-width: 850px;
+      margin: auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    .step {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      background: #111;
+      border: 1px solid #252525;
+      padding: 22px;
+      border-radius: 12px;
+    }
+
+    .number {
+      min-width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #ff2d55;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .step p {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .cta {
+      text-align: center;
+      background: #0e0e0e;
+    }
+
+    footer {
+      border-top: 1px solid #222;
+      padding: 35px 7%;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+    }
+
+    footer a {
+      color: #aaa;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    @media (max-width: 750px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        display: none;
+      }
+
+      h1 {
+        font-size: 45px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">HCartas<span>AI</span></div>
+
+  <nav>
+    <a href="#recursos">Recursos</a>
+    <a href="#como-funciona">Como funciona</a>
+    <a href="termos.html">Termos</a>
+    <a href="privacidade.html">Privacidade</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="hero-content">
+
+      <div class="badge">
+        Inteligência artificial para criadores
+      </div>
+
+      <h1>
+        Crie conteúdo.<br>
+        <span>Publique.</span> Cresça.
+      </h1>
+
+      <p>
+        O HCartas AI ajuda criadores a planejar, produzir,
+        gerenciar e publicar conteúdo para TikTok usando
+        ferramentas de inteligência artificial.
+      </p>
+
+      <a href="#recursos" class="button">
+        Conhecer a plataforma
+      </a>
+
+    </div>
+  </section>
+
+
+  <section id="recursos">
+
+    <div class="section-title">
+      <h2>Uma plataforma para criadores</h2>
+      <p>Ferramentas para transformar ideias em conteúdo.</p>
+    </div>
+
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-icon">✍️</div>
+        <h3>Criação de roteiros</h3>
+        <p>
+          Gere ideias e roteiros estruturados para diferentes
+          formatos de conteúdo.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🎬</div>
+        <h3>Produção de vídeos</h3>
+        <p>
+          Organize os elementos necessários para transformar
+          um roteiro em vídeo.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>Análise de desempenho</h3>
+        <p>
+          Acompanhe métricas e utilize os dados para melhorar
+          seus próximos conteúdos.
+        </p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section id="como-funciona">
+
+    <div class="section-title">
+      <h2>Como funciona</h2>
+      <p>Um fluxo simples para administrar seu conteúdo.</p>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="number">1</div>
+        <div>
+          <h3>Crie seu conteúdo</h3>
+          <p>
+            Desenvolva ideias e roteiros utilizando ferramentas
+            de inteligência artificial.
+          </p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="number">2</div>
+        <div>
+          <h3>Prepare o vídeo</h3>
+          <p>
+            Organize roteiro, narração, imagens e demais elementos.
+          </p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="number">3</div>
+        <div>
+          <h3>Conecte sua conta</h3>
+          <p>
+            Conecte sua conta TikTok através da integração oficial.
+          </p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="number">4</div>
+        <div>
+          <h3>Gerencie suas publicações</h3>
+          <p>
+            Acompanhe e gerencie seus conteúdos através da plataforma.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section class="cta">
+
+    <div class="section-title">
+
+      <h2>HCartas AI</h2>
+
+      <p>
+        Uma nova forma de criar e administrar conteúdo.
+      </p>
+
+      <br>
+
+      <a href="#recursos" class="button">
+        Começar
+      </a>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<footer>
+
+  <p>
+    © 2026 HCartas AI. Todos os direitos reservados.
+  </p>
+
+  <br>
+
+  <a href="termos.html">Termos de Serviço</a>
+
+  <a href="privacidade.html">Política de Privacidade</a>
+
+</footer>
+
+</body>
+</html>
