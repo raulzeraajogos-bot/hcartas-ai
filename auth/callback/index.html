@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conectando ao TikTok | HCartas AI</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #080808;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .box {
+      max-width: 620px;
+      width: 100%;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 36px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: #aaa;
+      line-height: 1.6;
+    }
+
+    .status {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 10px;
+      background: #181818;
+      word-break: break-word;
+    }
+
+    .success {
+      color: #7CFC98;
+    }
+
+    .error {
+      color: #ff6b6b;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 24px;
+      color: white;
+      background: #ff2d55;
+      text-decoration: none;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h1>Conectando sua conta TikTok</h1>
+
+    <p>
+      Estamos validando o retorno da autorização do TikTok.
+    </p>
+
+    <div id="status" class="status">
+      Processando...
+    </div>
+
+    <a href="/">Voltar para o HCartas AI</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const code = params.get("code");
+    const state = params.get("state");
+    const error = params.get("error");
+    const errorDescription = params.get("error_description");
+
+    const savedState = sessionStorage.getItem("tiktok_oauth_state");
+
+    const status = document.getElementById("status");
+
+    if (error) {
+      status.classList.add("error");
+      status.innerHTML =
+        "O TikTok retornou um erro.<br><br>" +
+        "Erro: " + error +
+        (errorDescription
+          ? "<br>Detalhes: " + errorDescription
+          : "");
+    }
+    else if (!code) {
+      status.classList.add("error");
+      status.innerHTML =
+        "Nenhum código de autorização foi recebido.";
+    }
+    else if (!state || !savedState || state !== savedState) {
+      status.classList.add("error");
+      status.innerHTML =
+        "Falha na validação de segurança do login.";
+    }
+    else {
+      status.classList.add("success");
+      status.innerHTML =
+        "Autorização recebida com sucesso.<br><br>" +
+        "O próximo passo será trocar esse código por um token no servidor.";
+
+      sessionStorage.removeItem("tiktok_oauth_state");
+
+      console.log("TikTok authorization code:", code);
+    }
+  </script>
+
+</body>
+</html>
