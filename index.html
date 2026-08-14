@@ -6,7 +6,10 @@
 
   <title>HCartas AI | Automação de conteúdo para TikTok</title>
 
-  <meta name="description" content="HCartas AI é uma plataforma de criação, gerenciamento e publicação de conteúdo para criadores do TikTok.">
+  <meta
+    name="description"
+    content="HCartas AI é uma plataforma de criação, gerenciamento e publicação de conteúdo para criadores do TikTok."
+  >
 
   <style>
     * {
@@ -100,11 +103,20 @@
       border-radius: 8px;
       font-weight: bold;
       transition: 0.2s;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
     }
 
     .button:hover {
       transform: translateY(-2px);
       opacity: 0.9;
+    }
+
+    .login-note {
+      color: #777;
+      font-size: 12px;
+      margin-top: 15px;
     }
 
     section {
@@ -255,9 +267,17 @@
         ferramentas de inteligência artificial.
       </p>
 
-      <a href="#recursos" class="button">
-        Conhecer a plataforma
-      </a>
+      <button
+        type="button"
+        class="button"
+        onclick="loginTikTok()"
+      >
+        Entrar com TikTok
+      </button>
+
+      <p class="login-note">
+        A conexão é realizada através da autorização oficial do TikTok.
+      </p>
 
     </div>
   </section>
@@ -366,14 +386,18 @@
       <h2>HCartas AI</h2>
 
       <p>
-        Uma nova forma de criar e administrar conteúdo.
+        Conecte sua conta TikTok para começar.
       </p>
 
       <br>
 
-      <a href="#recursos" class="button">
-        Começar
-      </a>
+      <button
+        type="button"
+        class="button"
+        onclick="loginTikTok()"
+      >
+        Entrar com TikTok
+      </button>
 
     </div>
 
@@ -395,6 +419,67 @@
   <a href="privacidade.html">Política de Privacidade</a>
 
 </footer>
+
+
+<script>
+  function criarState() {
+    if (window.crypto && window.crypto.randomUUID) {
+      return window.crypto.randomUUID();
+    }
+
+    return (
+      Date.now().toString(36) +
+      Math.random().toString(36).substring(2)
+    );
+  }
+
+  function loginTikTok() {
+
+    /*
+      IMPORTANTE:
+      Coloque abaixo SOMENTE a Client Key do Sandbox.
+
+      NÃO coloque:
+      - Client Secret
+      - Access Token
+      - Refresh Token
+    */
+
+    const clientKey = "sbawhufvy7qwo71fxn";
+
+    const redirectUri =
+      "https://hcartas-ai.vercel.app/auth/callback/";
+
+    const scopes = [
+      "user.info.basic",
+      "user.info.profile",
+      "video.list",
+      "video.upload"
+    ].join(",");
+
+    const state = criarState();
+
+    sessionStorage.setItem(
+      "tiktok_oauth_state",
+      state
+    );
+
+    const parametros =
+      new URLSearchParams({
+        client_key: clientKey,
+        scope: scopes,
+        response_type: "code",
+        redirect_uri: redirectUri,
+        state: state
+      });
+
+    const authUrl =
+      "https://www.tiktok.com/v2/auth/authorize/?" +
+      parametros.toString();
+
+    window.location.href = authUrl;
+  }
+</script>
 
 </body>
 </html>
