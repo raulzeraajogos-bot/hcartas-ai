@@ -113,16 +113,40 @@
       status.innerHTML =
         "Falha na validação de segurança do login.";
     }
-    else {
-      status.classList.add("success");
-      status.innerHTML =
-        "Autorização recebida com sucesso.<br><br>" +
-        "O próximo passo será trocar esse código por um token no servidor.";
+else {
+  status.innerHTML = "Autorização recebida. Conectando sua conta...";
 
-      sessionStorage.removeItem("tiktok_oauth_state");
+  fetch("/api/tiktok-token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ code })
+  })
+  .then(async (response) => {
+    const data = await response.json();
 
-      console.log("TikTok authorization code:", code);
+    if (!response.ok) {
+      throw new Error(
+        data.details?.error_description ||
+        data.error ||
+        "Falha ao conectar com o TikTok."
+      );
     }
+
+    sessionStorage.removeItem("tiktok_oauth_state");
+
+    status.classList.add("success");
+    status.innerHTML =
+      "Conta TikTok conectada com sucesso.";
+  })
+  .catch((error) => {
+    status.classList.add("error");
+    status.innerHTML =
+      "Erro ao conectar a conta TikTok.<br><br>" +
+      error.message;
+  });
+}
   </script>
 
 </body>
