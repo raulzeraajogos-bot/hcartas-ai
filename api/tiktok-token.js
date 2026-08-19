@@ -45,16 +45,45 @@ export default async function handler(req, res) {
       });
     }
 
-    if (!data.open_id || !data.access_token) {
+    if (!data.access_token) {
       return res.status(500).json({
-        error: "TikTok não retornou os dados esperados"
+        error: "TikTok não retornou o access_token",
+        details: data
       });
     }
 
-    // Conecta ao banco Neon usando a variável criada pela Vercel
+    // Algumas respostas de token podem não trazer open_id.
+    // Nesse caso, buscamos o open_id usando o access_token.
+    let openId = data.open_id;
+
+    if (!openId) {
+      const userResponse = await fetch(
+        "https://open.tiktokapis.com/v2/user/info/?fields=open_id",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${data.access_token}`
+          }
+        }
+      );
+
+      const userData = await userResponse.json();
+
+      openId = userData?.data?.user?.open_id;
+
+      if (!openId) {
+        return res.status(500).json({
+          error: "Não foi possível obter o open_id da conta TikTok",
+          details: userData
+        });
+      }
+    }
+
+    // Conecta ao banco Neon
     const sql = neon(process.env.DATABASE_URL);
 
-    // Salva a conta ou atualiza os tokens caso ela já exista
+    // Salva a conta TikTok.
+    // Se ela já existir, atualiza os tokens.
     await sql`
       INSERT INTO tiktok_accounts (
         open_id,
@@ -66,7 +95,7 @@ export default async function handler(req, res) {
         updated_at
       )
       VALUES (
-        ${data.open_id},
+        ${openId},
         ${data.access_token},
         ${data.refresh_token || null},
         ${data.expires_in || null},
@@ -84,11 +113,11 @@ export default async function handler(req, res) {
         updated_at = NOW()
     `;
 
-    // Não devolvemos os tokens secretos para o navegador
+    // Não enviamos access_token ou refresh_token ao navegador.
     return res.status(200).json({
       success: true,
       connected: true,
-      open_id: data.open_id
+      open_id: openId
     });
 
   } catch (error) {
