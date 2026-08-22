@@ -125,7 +125,7 @@
     .button:disabled {
       background: #333;
       color: #777;
-      cursor: default;
+      cursor: wait;
     }
 
     .result {
@@ -145,6 +145,17 @@
       color: #ddd;
       line-height: 1.7;
       white-space: pre-wrap;
+    }
+
+    .error {
+      display: none;
+      margin-top: 20px;
+      background: #211010;
+      border: 1px solid #542020;
+      color: #ff7777;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 14px;
     }
 
     .notice {
@@ -182,10 +193,12 @@
 
   <div class="title">
     <h1>✍️ Criar conteúdo</h1>
+
     <p>
       Transforme uma ideia em um roteiro para seu próximo vídeo.
     </p>
   </div>
+
 
   <div class="creator">
 
@@ -238,6 +251,7 @@
     </label>
 
     <select id="duracao">
+
       <option value="30">
         30 segundos
       </option>
@@ -249,6 +263,7 @@
       <option value="90">
         90 segundos
       </option>
+
     </select>
 
 
@@ -262,15 +277,26 @@
     </button>
 
     <p class="notice">
-      A geração por inteligência artificial será conectada ao servidor na próxima etapa.
+      O roteiro será criado por inteligência artificial com base nas informações acima.
     </p>
+
+
+    <div
+      id="errorBox"
+      class="error"
+    ></div>
 
   </div>
 
 
-  <div id="result" class="result">
+  <div
+    id="result"
+    class="result"
+  >
 
-    <h2>Roteiro gerado</h2>
+    <h2>
+      ✨ Roteiro gerado
+    </h2>
 
     <div
       id="resultContent"
@@ -283,7 +309,8 @@
 
 
 <script>
-  function gerarConteudo() {
+
+  async function gerarConteudo() {
 
     const tipo =
       document.getElementById("tipo").value;
@@ -297,34 +324,175 @@
     const duracao =
       document.getElementById("duracao").value;
 
+    const generateButton =
+      document.getElementById("generateButton");
+
     const result =
       document.getElementById("result");
 
     const resultContent =
       document.getElementById("resultContent");
 
+    const errorBox =
+      document.getElementById("errorBox");
+
+
     if (!tema) {
       alert("Digite o tema do vídeo.");
       return;
     }
 
-    resultContent.textContent =
-      "Tipo: " + tipo +
-      "\nTema: " + tema +
-      "\nDuração: " + duracao + " segundos" +
-      (detalhes
-        ? "\nDetalhes: " + detalhes
-        : "") +
-      "\n\nA integração com a IA será ativada na próxima etapa.";
+
+    errorBox.style.display =
+      "none";
 
     result.style.display =
-      "block";
+      "none";
 
-    result.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
+
+    /*
+      Impede vários cliques enquanto
+      a IA está gerando o roteiro.
+    */
+
+    generateButton.disabled =
+      true;
+
+    generateButton.textContent =
+      "⏳ Gerando roteiro...";
+
+
+    try {
+
+      /*
+        Envia os dados para nossa API
+        protegida na Vercel.
+      */
+
+      const response =
+        await fetch(
+          "/api/gerar-roteiro",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              tipo,
+              tema,
+              detalhes,
+              duracao
+            })
+          }
+        );
+
+
+      /*
+        Tenta ler a resposta da API.
+      */
+
+      const data =
+        await response.json();
+
+
+      /*
+        Se o servidor respondeu com erro,
+        mostramos a mensagem recebida.
+      */
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.details ||
+          data.error ||
+          "Não foi possível gerar o roteiro."
+        );
+      }
+
+
+      if (
+        !data.success ||
+        !data.roteiro
+      ) {
+
+        throw new Error(
+          "A inteligência artificial não retornou um roteiro."
+        );
+      }
+
+
+      /*
+        Exibe o roteiro real retornado
+        pelo servidor.
+      */
+
+      resultContent.textContent =
+        data.roteiro;
+
+      result.style.display =
+        "block";
+
+
+      result.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Erro ao gerar roteiro:",
+        error
+      );
+
+
+      errorBox.textContent =
+        "Erro ao gerar roteiro: " +
+        error.message;
+
+      errorBox.style.display =
+        "block";
+
+
+    } finally {
+
+      /*
+        Reativa o botão após concluir
+        ou após ocorrer algum erro.
+      */
+
+      generateButton.disabled =
+        false;
+
+      generateButton.textContent =
+        "✨ Gerar roteiro";
+    }
   }
+
+
+  /*
+    Permite gerar usando Ctrl + Enter
+    ou Command + Enter dentro dos campos.
+  */
+
+  document.addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key === "Enter"
+      ) {
+
+        gerarConteudo();
+      }
+    }
+  );
+
 </script>
 
 </body>
