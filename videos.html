@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Meus vídeos | HCartas AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #080808;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    header {
+      height: 72px;
+      border-bottom: 1px solid #222;
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 23px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #ff2d55;
+    }
+
+    .back {
+      color: #aaa;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back:hover {
+      color: #fff;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 50px 25px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-end;
+      margin-bottom: 35px;
+    }
+
+    .top h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .top p {
+      color: #888;
+    }
+
+    .summary {
+      color: #aaa;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    #loading {
+      color: #888;
+      padding: 20px 0;
+    }
+
+    #error {
+      display: none;
+      background: #211010;
+      border: 1px solid #542020;
+      color: #ff7777;
+      padding: 18px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .video-card {
+      background: #111;
+      border: 1px solid #252525;
+      border-radius: 15px;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .cover-wrap {
+      aspect-ratio: 3 / 4;
+      background: #1a1a1a;
+      overflow: hidden;
+    }
+
+    .cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .title {
+      font-size: 15px;
+      font-weight: bold;
+      line-height: 1.4;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .description {
+      color: #888;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .meta {
+      color: #777;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      background: #181818;
+      border: 1px solid #242424;
+      border-radius: 8px;
+      padding: 9px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .metric span {
+      font-size: 11px;
+      color: #777;
+    }
+
+    .button {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      background: #ff2d55;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .button:hover {
+      opacity: .9;
+    }
+
+    .more-note {
+      display: none;
+      text-align: center;
+      color: #777;
+      font-size: 13px;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 1050px) {
+      .videos-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 800px) {
+      .videos-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .top {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .videos-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .top h1 {
+        font-size: 29px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    HCartas<span>AI</span>
+  </div>
+
+  <a class="back" href="/dashboard.html">
+    ← Dashboard
+  </a>
+</header>
+
+<main>
+
+  <div class="top">
+    <div>
+      <h1>Meus vídeos</h1>
+      <p>
+        Conteúdos públicos carregados da sua conta TikTok.
+      </p>
+    </div>
+
+    <div
+      id="summary"
+      class="summary"
+    ></div>
+  </div>
+
+  <div id="loading">
+    Carregando vídeos do TikTok...
+  </div>
+
+  <div id="error">
+    Não foi possível carregar seus vídeos.
+  </div>
+
+  <div
+    id="videosGrid"
+    class="videos-grid"
+  ></div>
+
+  <div
+    id="moreNote"
+    class="more-note"
+  >
+    Existem mais vídeos disponíveis na conta.
+  </div>
+
+</main>
+
+<script>
+  function formatarNumero(valor) {
+    const numero = Number(valor || 0);
+
+    return new Intl.NumberFormat(
+      "pt-BR",
+      {
+        notation: numero >= 10000
+          ? "compact"
+          : "standard",
+        maximumFractionDigits: 1
+      }
+    ).format(numero);
+  }
+
+  function formatarData(timestamp) {
+    if (!timestamp) {
+      return "";
+    }
+
+    const date = new Date(
+      Number(timestamp) * 1000
+    );
+
+    return new Intl.DateTimeFormat(
+      "pt-BR",
+      {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      }
+    ).format(date);
+  }
+
+  function criarMetric(label, value) {
+    return `
+      <div class="metric">
+        <strong>${formatarNumero(value)}</strong>
+        <span>${label}</span>
+      </div>
+    `;
+  }
+
+  function criarCard(video) {
+    const titulo =
+      video.title ||
+      video.description ||
+      "Vídeo TikTok";
+
+    const descricao =
+      video.description || "";
+
+    const capa =
+      video.cover_image_url || "";
+
+    const link =
+      video.share_url || "#";
+
+    return `
+      <article class="video-card">
+
+        <div class="cover-wrap">
+          ${
+            capa
+              ? `
+                <img
+                  class="cover"
+                  src="${capa}"
+                  alt="Capa do vídeo"
+                  loading="lazy"
+                >
+              `
+              : ""
+          }
+        </div>
+
+        <div class="content">
+
+          <div class="title">
+            ${titulo}
+          </div>
+
+          <div class="description">
+            ${descricao}
+          </div>
+
+          <div class="meta">
+            ${
+              formatarData(
+                video.create_time
+              )
+            }
+            ${
+              video.duration
+                ? ` · ${video.duration}s`
+                : ""
+            }
+          </div>
+
+          <div class="metrics">
+
+            ${criarMetric(
+              "Visualizações",
+              video.view_count
+            )}
+
+            ${criarMetric(
+              "Curtidas",
+              video.like_count
+            )}
+
+            ${criarMetric(
+              "Comentários",
+              video.comment_count
+            )}
+
+            ${criarMetric(
+              "Compartilhamentos",
+              video.share_count
+            )}
+
+          </div>
+
+          <a
+            class="button"
+            href="${link}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ver no TikTok
+          </a>
+
+        </div>
+
+      </article>
+    `;
+  }
+
+  async function carregarVideos() {
+    const loading =
+      document.getElementById("loading");
+
+    const error =
+      document.getElementById("error");
+
+    const videosGrid =
+      document.getElementById("videosGrid");
+
+    const summary =
+      document.getElementById("summary");
+
+    const moreNote =
+      document.getElementById("moreNote");
+
+    try {
+      const response =
+        await fetch("/api/tiktok-videos");
+
+      if (!response.ok) {
+        throw new Error(
+          "Erro ao consultar vídeos."
+        );
+      }
+
+      const data =
+        await response.json();
+
+      const videos =
+        data.videos || [];
+
+      summary.textContent =
+        `${videos.length} vídeo${
+          videos.length === 1 ? "" : "s"
+        } carregado${
+          videos.length === 1 ? "" : "s"
+        }`;
+
+      if (!videos.length) {
+        videosGrid.innerHTML =
+          `
+            <div style="color:#777;">
+              Nenhum vídeo encontrado.
+            </div>
+          `;
+
+        return;
+      }
+
+      videosGrid.innerHTML =
+        videos
+          .map(criarCard)
+          .join("");
+
+      if (data.has_more) {
+        moreNote.style.display =
+          "block";
+      }
+
+    } catch (err) {
+      console.error(err);
+
+      error.style.display =
+        "block";
+
+    } finally {
+      loading.style.display =
+        "none";
+    }
+  }
+
+  window.addEventListener(
+    "DOMContentLoaded",
+    carregarVideos
+  );
+</script>
+
+</body>
+</html>
