@@ -539,6 +539,15 @@
         Entrar com TikTok
       </button>
 
+      <a
+        id="dashboardLink"
+        class="button"
+        href="/painel.html"
+        style="display:none; margin-left:10px;"
+      >
+        Abrir painel
+      </a>
+
     </div>
 
   </section>
@@ -575,15 +584,6 @@
 
 
   function loginTikTok() {
-
-    /*
-      Client Key pública do Sandbox.
-
-      Nunca colocar aqui:
-      - Client Secret
-      - Access Token
-      - Refresh Token
-    */
 
     const clientKey = "sbawhufvy7qwo71fxn";
 
@@ -650,15 +650,10 @@
     const ctaLoginButton =
       document.getElementById("ctaLoginButton");
 
-    try {
+    const dashboardLink =
+      document.getElementById("dashboardLink");
 
-      /*
-        O endpoint tiktok-profile:
-        - lê o token no Neon
-        - renova automaticamente se necessário
-        - consulta a API oficial do TikTok
-        - nunca envia os tokens ao navegador
-      */
+    try {
 
       const response =
         await fetch("/api/tiktok-profile");
@@ -684,24 +679,12 @@
       const profile =
         data.profile;
 
-      /*
-        Esconde o botão de login.
-      */
-
       loginArea.style.display =
         "none";
-
-      /*
-        Mostra o cartão da conta.
-      */
 
       accountCard.classList.add(
         "visible"
       );
-
-      /*
-        Avatar
-      */
 
       if (profile.avatar_url) {
         accountAvatar.src =
@@ -714,17 +697,9 @@
           "none";
       }
 
-      /*
-        Nome
-      */
-
       accountName.textContent =
         profile.display_name ||
         "Conta TikTok";
-
-      /*
-        Username
-      */
 
       if (profile.username) {
         accountUsername.textContent =
@@ -734,12 +709,7 @@
           "";
       }
 
-      /*
-        Link do perfil
-      */
-
       if (profile.profile_deep_link) {
-
         accountLink.href =
           profile.profile_deep_link;
 
@@ -747,22 +717,16 @@
           "inline-block";
       }
 
-      /*
-        CTA inferior
-      */
-
       ctaText.textContent =
         "Sua conta TikTok está conectada.";
 
       ctaLoginButton.style.display =
         "none";
 
-    } catch (error) {
+      dashboardLink.style.display =
+        "inline-block";
 
-      /*
-        Se não houver conta conectada,
-        mantém o botão de login visível.
-      */
+    } catch (error) {
 
       loginArea.style.display =
         "block";
@@ -777,6 +741,9 @@
       ctaLoginButton.style.display =
         "inline-block";
 
+      dashboardLink.style.display =
+        "none";
+
       console.log(
         "TikTok não conectado:",
         error.message
@@ -789,12 +756,6 @@
     }
   }
 
-
-  /*
-    Ao carregar a página,
-    verifica automaticamente
-    se existe uma conta TikTok conectada.
-  */
 
   window.addEventListener(
     "DOMContentLoaded",
