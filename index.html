@@ -306,10 +306,6 @@
       h1 {
         font-size: 45px;
       }
-
-      .account-card.visible {
-        text-align: left;
-      }
     }
   </style>
 </head>
@@ -402,7 +398,6 @@
             </a>
 
           </div>
-
         </div>
 
         <div
@@ -413,7 +408,6 @@
         </div>
 
       </div>
-
     </div>
   </section>
 
@@ -470,7 +464,6 @@
 
       <div class="step">
         <div class="number">1</div>
-
         <div>
           <h3>Crie seu conteúdo</h3>
           <p>
@@ -482,7 +475,6 @@
 
       <div class="step">
         <div class="number">2</div>
-
         <div>
           <h3>Prepare o vídeo</h3>
           <p>
@@ -493,7 +485,6 @@
 
       <div class="step">
         <div class="number">3</div>
-
         <div>
           <h3>Conecte sua conta</h3>
           <p>
@@ -504,7 +495,6 @@
 
       <div class="step">
         <div class="number">4</div>
-
         <div>
           <h3>Gerencie suas publicações</h3>
           <p>
@@ -542,7 +532,7 @@
       <a
         id="dashboardLink"
         class="button"
-        href="/painel.html"
+        href="/dashboard.html"
         style="display:none; margin-left:10px;"
       >
         Abrir painel
@@ -564,7 +554,6 @@
   <br>
 
   <a href="termos.html">Termos de Serviço</a>
-
   <a href="privacidade.html">Política de Privacidade</a>
 
 </footer>
@@ -667,10 +656,7 @@
       const data =
         await response.json();
 
-      if (
-        !data.connected ||
-        !data.profile
-      ) {
+      if (!data.connected || !data.profile) {
         throw new Error(
           "Conta TikTok não conectada."
         );
