@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Criar conteúdo | HCartas AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #080808;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    header {
+      height: 72px;
+      border-bottom: 1px solid #222;
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 23px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #ff2d55;
+    }
+
+    .back {
+      color: #aaa;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back:hover {
+      color: #fff;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 50px 25px;
+    }
+
+    .title {
+      margin-bottom: 35px;
+    }
+
+    .title h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .title p {
+      color: #888;
+    }
+
+    .creator {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 16px;
+      padding: 30px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 9px;
+    }
+
+    select,
+    input,
+    textarea {
+      width: 100%;
+      background: #181818;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 13px;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 22px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      border-color: #ff2d55;
+    }
+
+    .button {
+      background: #ff2d55;
+      color: #fff;
+      border: 0;
+      padding: 13px 22px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .button:hover {
+      opacity: .9;
+    }
+
+    .button:disabled {
+      background: #333;
+      color: #777;
+      cursor: default;
+    }
+
+    .result {
+      display: none;
+      margin-top: 30px;
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 16px;
+      padding: 30px;
+    }
+
+    .result h2 {
+      margin-bottom: 18px;
+    }
+
+    .result-content {
+      color: #ddd;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .notice {
+      margin-top: 20px;
+      color: #777;
+      font-size: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .title h1 {
+        font-size: 29px;
+      }
+
+      .creator,
+      .result {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    HCartas<span>AI</span>
+  </div>
+
+  <a class="back" href="/dashboard.html">
+    ← Dashboard
+  </a>
+</header>
+
+<main>
+
+  <div class="title">
+    <h1>✍️ Criar conteúdo</h1>
+    <p>
+      Transforme uma ideia em um roteiro para seu próximo vídeo.
+    </p>
+  </div>
+
+  <div class="creator">
+
+    <label for="tipo">
+      Tipo de conteúdo
+    </label>
+
+    <select id="tipo">
+      <option value="historia">
+        História
+      </option>
+
+      <option value="curiosidade">
+        Curiosidade
+      </option>
+
+      <option value="lista">
+        Lista
+      </option>
+
+      <option value="dica">
+        Dica
+      </option>
+    </select>
+
+
+    <label for="tema">
+      Tema do vídeo
+    </label>
+
+    <input
+      id="tema"
+      type="text"
+      placeholder="Ex.: uma história de família com final inesperado"
+    >
+
+
+    <label for="detalhes">
+      Detalhes adicionais
+    </label>
+
+    <textarea
+      id="detalhes"
+      placeholder="Conte aqui o que você gostaria que aparecesse no vídeo..."
+    ></textarea>
+
+
+    <label for="duracao">
+      Duração aproximada
+    </label>
+
+    <select id="duracao">
+      <option value="30">
+        30 segundos
+      </option>
+
+      <option value="60" selected>
+        60 segundos
+      </option>
+
+      <option value="90">
+        90 segundos
+      </option>
+    </select>
+
+
+    <button
+      id="generateButton"
+      class="button"
+      type="button"
+      onclick="gerarConteudo()"
+    >
+      ✨ Gerar roteiro
+    </button>
+
+    <p class="notice">
+      A geração por inteligência artificial será conectada ao servidor na próxima etapa.
+    </p>
+
+  </div>
+
+
+  <div id="result" class="result">
+
+    <h2>Roteiro gerado</h2>
+
+    <div
+      id="resultContent"
+      class="result-content"
+    ></div>
+
+  </div>
+
+</main>
+
+
+<script>
+  function gerarConteudo() {
+
+    const tipo =
+      document.getElementById("tipo").value;
+
+    const tema =
+      document.getElementById("tema").value.trim();
+
+    const detalhes =
+      document.getElementById("detalhes").value.trim();
+
+    const duracao =
+      document.getElementById("duracao").value;
+
+    const result =
+      document.getElementById("result");
+
+    const resultContent =
+      document.getElementById("resultContent");
+
+    if (!tema) {
+      alert("Digite o tema do vídeo.");
+      return;
+    }
+
+    resultContent.textContent =
+      "Tipo: " + tipo +
+      "\nTema: " + tema +
+      "\nDuração: " + duracao + " segundos" +
+      (detalhes
+        ? "\nDetalhes: " + detalhes
+        : "") +
+      "\n\nA integração com a IA será ativada na próxima etapa.";
+
+    result.style.display =
+      "block";
+
+    result.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+</script>
+
+</body>
+</html>
