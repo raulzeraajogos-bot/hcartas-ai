@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dashboard | HCartas AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #080808;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    header {
+      height: 72px;
+      border-bottom: 1px solid #222;
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 23px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #ff2d55;
+    }
+
+    .back {
+      color: #aaa;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back:hover {
+      color: #fff;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 50px 25px;
+    }
+
+    .welcome {
+      margin-bottom: 35px;
+    }
+
+    .welcome h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      color: #888;
+    }
+
+    .profile-card {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 16px;
+      padding: 25px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #222;
+    }
+
+    .status {
+      color: #55e97b;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .profile-name {
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .username {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      min-height: 190px;
+      padding: 25px;
+      background: #111;
+      border: 1px solid #252525;
+      border-radius: 15px;
+    }
+
+    .icon {
+      font-size: 28px;
+      margin-bottom: 18px;
+    }
+
+    .card h2 {
+      font-size: 19px;
+      margin-bottom: 9px;
+    }
+
+    .card p {
+      color: #888;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .button {
+      display: inline-block;
+      background: #ff2d55;
+      color: #fff;
+      border: 0;
+      padding: 10px 16px;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .button:hover {
+      opacity: .9;
+    }
+
+    .button.disabled {
+      background: #282828;
+      color: #777;
+      cursor: default;
+    }
+
+    #loading {
+      color: #888;
+      padding: 20px 0;
+    }
+
+    #error {
+      display: none;
+      background: #211010;
+      border: 1px solid #542020;
+      color: #ff7777;
+      padding: 18px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome h1 {
+        font-size: 29px;
+      }
+
+      .profile-card {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    HCartas<span>AI</span>
+  </div>
+
+  <a class="back" href="/">
+    ← Página inicial
+  </a>
+</header>
+
+<main>
+
+  <div class="welcome">
+    <h1>Painel do criador</h1>
+    <p>
+      Gerencie sua conta, conteúdo e publicações.
+    </p>
+  </div>
+
+  <div id="loading">
+    Carregando sua conta TikTok...
+  </div>
+
+  <div id="error">
+    Não foi possível carregar sua conta TikTok.
+  </div>
+
+  <div
+    id="profileCard"
+    class="profile-card"
+    style="display:none;"
+  >
+    <img
+      id="avatar"
+      class="avatar"
+      alt="Avatar TikTok"
+    >
+
+    <div>
+      <div class="status">
+        TikTok conectado ✓
+      </div>
+
+      <div
+        id="profileName"
+        class="profile-name"
+      >
+        Conta TikTok
+      </div>
+
+      <div
+        id="username"
+        class="username"
+      ></div>
+    </div>
+  </div>
+
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="icon">✍️</div>
+
+      <h2>Criar conteúdo</h2>
+
+      <p>
+        Crie ideias, títulos e roteiros para
+        seus próximos vídeos.
+      </p>
+
+      <span class="button disabled">
+        Em breve
+      </span>
+    </div>
+
+
+    <div class="card">
+      <div class="icon">🎬</div>
+
+      <h2>Meus vídeos</h2>
+
+      <p>
+        Consulte e gerencie os vídeos
+        associados à sua conta TikTok.
+      </p>
+
+      <span class="button disabled">
+        Em breve
+      </span>
+    </div>
+
+
+    <div class="card">
+      <div class="icon">🚀</div>
+
+      <h2>Publicar</h2>
+
+      <p>
+        Prepare conteúdos para publicação
+        através da integração com o TikTok.
+      </p>
+
+      <span class="button disabled">
+        Em breve
+      </span>
+    </div>
+
+
+    <div class="card">
+      <div class="icon">📊</div>
+
+      <h2>Desempenho</h2>
+
+      <p>
+        Acompanhe informações dos conteúdos
+        e identifique oportunidades de crescimento.
+      </p>
+
+      <span class="button disabled">
+        Em breve
+      </span>
+    </div>
+
+
+    <div class="card">
+      <div class="icon">💡</div>
+
+      <h2>Ideias com IA</h2>
+
+      <p>
+        Gere sugestões de novos conteúdos
+        para alimentar seu calendário.
+      </p>
+
+      <span class="button disabled">
+        Em breve
+      </span>
+    </div>
+
+
+    <div class="card">
+      <div class="icon">⚙️</div>
+
+      <h2>Conta</h2>
+
+      <p>
+        Consulte as informações da conta
+        TikTok conectada à plataforma.
+      </p>
+
+      <a
+        id="profileLink"
+        class="button"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="display:none;"
+      >
+        Ver no TikTok
+      </a>
+    </div>
+
+  </div>
+
+</main>
+
+
+<script>
+  async function carregarDashboard() {
+
+    const loading =
+      document.getElementById("loading");
+
+    const error =
+      document.getElementById("error");
+
+    const profileCard =
+      document.getElementById("profileCard");
+
+    const avatar =
+      document.getElementById("avatar");
+
+    const profileName =
+      document.getElementById("profileName");
+
+    const username =
+      document.getElementById("username");
+
+    const profileLink =
+      document.getElementById("profileLink");
+
+    try {
+
+      const response =
+        await fetch("/api/tiktok-profile");
+
+      if (!response.ok) {
+        throw new Error(
+          "Erro ao consultar conta."
+        );
+      }
+
+      const data =
+        await response.json();
+
+      if (!data.connected || !data.profile) {
+        throw new Error(
+          "Nenhuma conta conectada."
+        );
+      }
+
+      const profile =
+        data.profile;
+
+      if (profile.avatar_url) {
+        avatar.src =
+          profile.avatar_url;
+      } else {
+        avatar.style.display =
+          "none";
+      }
+
+      profileName.textContent =
+        profile.display_name ||
+        "Conta TikTok";
+
+      username.textContent =
+        profile.username
+          ? "@" + profile.username
+          : "";
+
+      if (profile.profile_deep_link) {
+        profileLink.href =
+          profile.profile_deep_link;
+
+        profileLink.style.display =
+          "inline-block";
+      }
+
+      profileCard.style.display =
+        "flex";
+
+    } catch (err) {
+
+      console.error(err);
+
+      error.style.display =
+        "block";
+
+    } finally {
+
+      loading.style.display =
+        "none";
+    }
+  }
+
+  window.addEventListener(
+    "DOMContentLoaded",
+    carregarDashboard
+  );
+</script>
+
+</body>
+</html>
