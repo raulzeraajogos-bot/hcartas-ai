@@ -64,6 +64,7 @@
 
     .hero-content {
       max-width: 850px;
+      width: 100%;
     }
 
     .badge {
@@ -114,8 +115,83 @@
     }
 
     .login-note {
+      color: #777 !important;
+      font-size: 12px !important;
+      margin-top: 15px !important;
+      margin-bottom: 0 !important;
+    }
+
+    .tiktok-area {
+      margin-top: 10px;
+    }
+
+    .account-card {
+      display: none;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #111;
+      border: 1px solid #2b2b2b;
+      border-radius: 16px;
+      text-align: left;
+    }
+
+    .account-card.visible {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .account-avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #222;
+      flex-shrink: 0;
+    }
+
+    .account-info {
+      min-width: 0;
+    }
+
+    .connected-status {
+      color: #55e97b;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .account-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .account-username {
+      color: #999;
+      font-size: 14px;
+      margin-top: 1px;
+    }
+
+    .account-link {
+      display: inline-block;
+      color: #ff2d55;
+      text-decoration: none;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .account-link:hover {
+      text-decoration: underline;
+    }
+
+    .loading-account {
       color: #777;
-      font-size: 12px;
+      font-size: 13px;
       margin-top: 15px;
     }
 
@@ -230,6 +306,10 @@
       h1 {
         font-size: 45px;
       }
+
+      .account-card.visible {
+        text-align: left;
+      }
     }
   </style>
 </head>
@@ -267,17 +347,72 @@
         ferramentas de inteligência artificial.
       </p>
 
-      <button
-        type="button"
-        class="button"
-        onclick="loginTikTok()"
-      >
-        Entrar com TikTok
-      </button>
+      <div class="tiktok-area">
 
-      <p class="login-note">
-        A conexão é realizada através da autorização oficial do TikTok.
-      </p>
+        <div id="loginArea">
+          <button
+            type="button"
+            class="button"
+            onclick="loginTikTok()"
+          >
+            Entrar com TikTok
+          </button>
+
+          <p class="login-note">
+            A conexão é realizada através da autorização oficial do TikTok.
+          </p>
+        </div>
+
+        <div id="accountCard" class="account-card">
+
+          <img
+            id="accountAvatar"
+            class="account-avatar"
+            src=""
+            alt="Avatar da conta TikTok"
+          >
+
+          <div class="account-info">
+
+            <div class="connected-status">
+              TikTok conectado ✓
+            </div>
+
+            <div
+              id="accountName"
+              class="account-name"
+            >
+              Conta TikTok
+            </div>
+
+            <div
+              id="accountUsername"
+              class="account-username"
+            ></div>
+
+            <a
+              id="accountLink"
+              class="account-link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="display:none;"
+            >
+              Ver perfil no TikTok
+            </a>
+
+          </div>
+
+        </div>
+
+        <div
+          id="loadingAccount"
+          class="loading-account"
+        >
+          Verificando conexão com o TikTok...
+        </div>
+
+      </div>
 
     </div>
   </section>
@@ -335,6 +470,7 @@
 
       <div class="step">
         <div class="number">1</div>
+
         <div>
           <h3>Crie seu conteúdo</h3>
           <p>
@@ -346,6 +482,7 @@
 
       <div class="step">
         <div class="number">2</div>
+
         <div>
           <h3>Prepare o vídeo</h3>
           <p>
@@ -356,6 +493,7 @@
 
       <div class="step">
         <div class="number">3</div>
+
         <div>
           <h3>Conecte sua conta</h3>
           <p>
@@ -366,6 +504,7 @@
 
       <div class="step">
         <div class="number">4</div>
+
         <div>
           <h3>Gerencie suas publicações</h3>
           <p>
@@ -385,13 +524,14 @@
 
       <h2>HCartas AI</h2>
 
-      <p>
+      <p id="ctaText">
         Conecte sua conta TikTok para começar.
       </p>
 
       <br>
 
       <button
+        id="ctaLoginButton"
         type="button"
         class="button"
         onclick="loginTikTok()"
@@ -433,13 +573,13 @@
     );
   }
 
+
   function loginTikTok() {
 
     /*
-      IMPORTANTE:
-      Coloque abaixo SOMENTE a Client Key do Sandbox.
+      Client Key pública do Sandbox.
 
-      NÃO coloque:
+      Nunca colocar aqui:
       - Client Secret
       - Access Token
       - Refresh Token
@@ -479,6 +619,187 @@
 
     window.location.href = authUrl;
   }
+
+
+  async function carregarContaTikTok() {
+
+    const loginArea =
+      document.getElementById("loginArea");
+
+    const accountCard =
+      document.getElementById("accountCard");
+
+    const loadingAccount =
+      document.getElementById("loadingAccount");
+
+    const accountAvatar =
+      document.getElementById("accountAvatar");
+
+    const accountName =
+      document.getElementById("accountName");
+
+    const accountUsername =
+      document.getElementById("accountUsername");
+
+    const accountLink =
+      document.getElementById("accountLink");
+
+    const ctaText =
+      document.getElementById("ctaText");
+
+    const ctaLoginButton =
+      document.getElementById("ctaLoginButton");
+
+    try {
+
+      /*
+        O endpoint tiktok-profile:
+        - lê o token no Neon
+        - renova automaticamente se necessário
+        - consulta a API oficial do TikTok
+        - nunca envia os tokens ao navegador
+      */
+
+      const response =
+        await fetch("/api/tiktok-profile");
+
+      if (!response.ok) {
+        throw new Error(
+          "Nenhuma conta TikTok conectada."
+        );
+      }
+
+      const data =
+        await response.json();
+
+      if (
+        !data.connected ||
+        !data.profile
+      ) {
+        throw new Error(
+          "Conta TikTok não conectada."
+        );
+      }
+
+      const profile =
+        data.profile;
+
+      /*
+        Esconde o botão de login.
+      */
+
+      loginArea.style.display =
+        "none";
+
+      /*
+        Mostra o cartão da conta.
+      */
+
+      accountCard.classList.add(
+        "visible"
+      );
+
+      /*
+        Avatar
+      */
+
+      if (profile.avatar_url) {
+        accountAvatar.src =
+          profile.avatar_url;
+
+        accountAvatar.style.display =
+          "block";
+      } else {
+        accountAvatar.style.display =
+          "none";
+      }
+
+      /*
+        Nome
+      */
+
+      accountName.textContent =
+        profile.display_name ||
+        "Conta TikTok";
+
+      /*
+        Username
+      */
+
+      if (profile.username) {
+        accountUsername.textContent =
+          "@" + profile.username;
+      } else {
+        accountUsername.textContent =
+          "";
+      }
+
+      /*
+        Link do perfil
+      */
+
+      if (profile.profile_deep_link) {
+
+        accountLink.href =
+          profile.profile_deep_link;
+
+        accountLink.style.display =
+          "inline-block";
+      }
+
+      /*
+        CTA inferior
+      */
+
+      ctaText.textContent =
+        "Sua conta TikTok está conectada.";
+
+      ctaLoginButton.style.display =
+        "none";
+
+    } catch (error) {
+
+      /*
+        Se não houver conta conectada,
+        mantém o botão de login visível.
+      */
+
+      loginArea.style.display =
+        "block";
+
+      accountCard.classList.remove(
+        "visible"
+      );
+
+      ctaText.textContent =
+        "Conecte sua conta TikTok para começar.";
+
+      ctaLoginButton.style.display =
+        "inline-block";
+
+      console.log(
+        "TikTok não conectado:",
+        error.message
+      );
+
+    } finally {
+
+      loadingAccount.style.display =
+        "none";
+    }
+  }
+
+
+  /*
+    Ao carregar a página,
+    verifica automaticamente
+    se existe uma conta TikTok conectada.
+  */
+
+  window.addEventListener(
+    "DOMContentLoaded",
+    carregarContaTikTok
+  );
 </script>
 
 </body>
