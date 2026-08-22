@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Desempenho | HCartas AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #080808;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    header {
+      height: 72px;
+      border-bottom: 1px solid #222;
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 23px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #ff2d55;
+    }
+
+    .back {
+      color: #aaa;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back:hover {
+      color: #fff;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 50px 25px;
+    }
+
+    .title {
+      margin-bottom: 35px;
+    }
+
+    .title h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .title p {
+      color: #888;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+
+    .metric {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 15px;
+      padding: 24px;
+    }
+
+    .metric-label {
+      color: #888;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .metric-value {
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .metric-icon {
+      margin-bottom: 12px;
+      font-size: 25px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .best-video {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 16px;
+      padding: 22px;
+      display: none;
+      grid-template-columns: 180px 1fr;
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .best-video img {
+      width: 180px;
+      height: 240px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #222;
+    }
+
+    .best-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .best-badge {
+      color: #55e97b;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .best-title {
+      font-size: 21px;
+      font-weight: bold;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .best-description {
+      color: #888;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .best-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .small-stat {
+      background: #181818;
+      border: 1px solid #292929;
+      border-radius: 9px;
+      padding: 12px;
+    }
+
+    .small-stat strong {
+      display: block;
+      font-size: 17px;
+      margin-bottom: 3px;
+    }
+
+    .small-stat span {
+      color: #777;
+      font-size: 11px;
+    }
+
+    .button {
+      display: inline-block;
+      width: fit-content;
+      background: #ff2d55;
+      color: #fff;
+      text-decoration: none;
+      padding: 11px 18px;
+      border-radius: 7px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .button:hover {
+      opacity: .9;
+    }
+
+    #loading {
+      color: #888;
+      padding: 25px 0;
+    }
+
+    #error {
+      display: none;
+      background: #211010;
+      border: 1px solid #542020;
+      color: #ff7777;
+      padding: 18px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+
+    .info {
+      color: #666;
+      font-size: 12px;
+      margin-top: 25px;
+    }
+
+    @media (max-width: 850px) {
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .best-video {
+        grid-template-columns: 1fr;
+      }
+
+      .best-video img {
+        width: 100%;
+        height: auto;
+        max-height: 500px;
+      }
+
+      .best-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .title h1 {
+        font-size: 29px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    HCartas<span>AI</span>
+  </div>
+
+  <a class="back" href="/dashboard.html">
+    ← Dashboard
+  </a>
+</header>
+
+<main>
+
+  <div class="title">
+    <h1>Desempenho</h1>
+    <p>
+      Veja como seus conteúdos estão performando no TikTok.
+    </p>
+  </div>
+
+  <div id="loading">
+    Carregando dados dos seus vídeos...
+  </div>
+
+  <div id="error">
+    Não foi possível carregar os dados de desempenho.
+  </div>
+
+  <div id="content" style="display:none;">
+
+    <div class="metrics">
+
+      <div class="metric">
+        <div class="metric-icon">👁️</div>
+        <div class="metric-label">Visualizações</div>
+        <div id="totalViews" class="metric-value">0</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-icon">❤️</div>
+        <div class="metric-label">Curtidas</div>
+        <div id="totalLikes" class="metric-value">0</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-icon">💬</div>
+        <div class="metric-label">Comentários</div>
+        <div id="totalComments" class="metric-value">0</div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-icon">↗️</div>
+        <div class="metric-label">Compartilhamentos</div>
+        <div id="totalShares" class="metric-value">0</div>
+      </div>
+
+    </div>
+
+
+    <h2 class="section-title">
+      🏆 Vídeo com mais visualizações
+    </h2>
+
+    <div id="bestVideo" class="best-video">
+
+      <img
+        id="bestCover"
+        src=""
+        alt="Capa do vídeo"
+      >
+
+      <div class="best-content">
+
+        <div class="best-badge">
+          Melhor desempenho
+        </div>
+
+        <div
+          id="bestTitle"
+          class="best-title"
+        ></div>
+
+        <div
+          id="bestDescription"
+          class="best-description"
+        ></div>
+
+        <div class="best-stats">
+
+          <div class="small-stat">
+            <strong id="bestViews">0</strong>
+            <span>Visualizações</span>
+          </div>
+
+          <div class="small-stat">
+            <strong id="bestLikes">0</strong>
+            <span>Curtidas</span>
+          </div>
+
+          <div class="small-stat">
+            <strong id="bestComments">0</strong>
+            <span>Comentários</span>
+          </div>
+
+          <div class="small-stat">
+            <strong id="bestShares">0</strong>
+            <span>Compartilhamentos</span>
+          </div>
+
+        </div>
+
+        <a
+          id="bestLink"
+          class="button"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Ver no TikTok
+        </a>
+
+      </div>
+
+    </div>
+
+    <p id="videoCount" class="info"></p>
+
+  </div>
+
+</main>
+
+
+<script>
+
+  function numero(valor) {
+    const n = Number(valor);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+
+  function formatarNumero(valor) {
+    return new Intl.NumberFormat(
+      "pt-BR"
+    ).format(numero(valor));
+  }
+
+
+  async function carregarDesempenho() {
+
+    const loading =
+      document.getElementById("loading");
+
+    const error =
+      document.getElementById("error");
+
+    const content =
+      document.getElementById("content");
+
+    try {
+
+      const response =
+        await fetch("/api/tiktok-videos");
+
+      if (!response.ok) {
+        throw new Error(
+          "Erro ao consultar os vídeos."
+        );
+      }
+
+      const data =
+        await response.json();
+
+      if (
+        !data.connected ||
+        !Array.isArray(data.videos)
+      ) {
+        throw new Error(
+          "Nenhum vídeo encontrado."
+        );
+      }
+
+      const videos = data.videos;
+
+      if (videos.length === 0) {
+        throw new Error(
+          "A conta ainda não possui vídeos disponíveis."
+        );
+      }
+
+
+      let totalViews = 0;
+      let totalLikes = 0;
+      let totalComments = 0;
+      let totalShares = 0;
+
+      for (const video of videos) {
+
+        totalViews +=
+          numero(video.view_count);
+
+        totalLikes +=
+          numero(video.like_count);
+
+        totalComments +=
+          numero(video.comment_count);
+
+        totalShares +=
+          numero(video.share_count);
+      }
+
+
+      document.getElementById(
+        "totalViews"
+      ).textContent =
+        formatarNumero(totalViews);
+
+      document.getElementById(
+        "totalLikes"
+      ).textContent =
+        formatarNumero(totalLikes);
+
+      document.getElementById(
+        "totalComments"
+      ).textContent =
+        formatarNumero(totalComments);
+
+      document.getElementById(
+        "totalShares"
+      ).textContent =
+        formatarNumero(totalShares);
+
+
+      const melhorVideo =
+        [...videos].sort(
+          (a, b) =>
+            numero(b.view_count) -
+            numero(a.view_count)
+        )[0];
+
+
+      if (melhorVideo) {
+
+        const bestVideo =
+          document.getElementById(
+            "bestVideo"
+          );
+
+        const bestCover =
+          document.getElementById(
+            "bestCover"
+          );
+
+        if (melhorVideo.cover_image_url) {
+          bestCover.src =
+            melhorVideo.cover_image_url;
+        } else {
+          bestCover.style.display =
+            "none";
+        }
+
+
+        document.getElementById(
+          "bestTitle"
+        ).textContent =
+          melhorVideo.title ||
+          "Vídeo TikTok";
+
+
+        document.getElementById(
+          "bestDescription"
+        ).textContent =
+          melhorVideo.description ||
+          "";
+
+
+        document.getElementById(
+          "bestViews"
+        ).textContent =
+          formatarNumero(
+            melhorVideo.view_count
+          );
+
+
+        document.getElementById(
+          "bestLikes"
+        ).textContent =
+          formatarNumero(
+            melhorVideo.like_count
+          );
+
+
+        document.getElementById(
+          "bestComments"
+        ).textContent =
+          formatarNumero(
+            melhorVideo.comment_count
+          );
+
+
+        document.getElementById(
+          "bestShares"
+        ).textContent =
+          formatarNumero(
+            melhorVideo.share_count
+          );
+
+
+        const bestLink =
+          document.getElementById(
+            "bestLink"
+          );
+
+        if (melhorVideo.share_url) {
+          bestLink.href =
+            melhorVideo.share_url;
+        } else {
+          bestLink.style.display =
+            "none";
+        }
+
+
+        bestVideo.style.display =
+          "grid";
+      }
+
+
+      document.getElementById(
+        "videoCount"
+      ).textContent =
+        "Dados calculados a partir de " +
+        videos.length +
+        " vídeos carregados da conta TikTok.";
+
+
+      content.style.display =
+        "block";
+
+
+    } catch (err) {
+
+      console.error(err);
+
+      error.style.display =
+        "block";
+
+      error.textContent =
+        err.message ||
+        "Não foi possível carregar os dados.";
+
+    } finally {
+
+      loading.style.display =
+        "none";
+    }
+  }
+
+
+  window.addEventListener(
+    "DOMContentLoaded",
+    carregarDesempenho
+  );
+
+</script>
+
+</body>
+</html>
