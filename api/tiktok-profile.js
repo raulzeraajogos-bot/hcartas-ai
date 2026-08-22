@@ -1,5 +1,80 @@
 import { neon } from "@neondatabase/serverless";
 
+async function refreshTikTokToken(account, sql) {
+  if (!account.refresh_token) {
+    throw new Error("Refresh token não disponível");
+  }
+
+  const body = new URLSearchParams({
+    client_key: process.env.TIKTOK_CLIENT_KEY,
+    client_secret: process.env.TIKTOK_CLIENT_SECRET,
+    grant_type: "refresh_token",
+    refresh_token: account.refresh_token
+  });
+
+  const response = await fetch(
+    "https://open.tiktokapis.com/v2/oauth/token/",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok || !data.access_token) {
+    throw new Error(
+      data?.error_description ||
+      data?.message ||
+      "Falha ao renovar token do TikTok"
+    );
+  }
+
+  await sql`
+    UPDATE tiktok_accounts
+    SET
+      access_token = ${data.access_token},
+      refresh_token = ${data.refresh_token || account.refresh_token},
+      expires_in = ${data.expires_in || null},
+      refresh_expires_in = ${data.refresh_expires_in || null},
+      scope = ${data.scope || account.scope || null},
+      updated_at = NOW()
+    WHERE open_id = ${account.open_id}
+  `;
+
+  return {
+    ...account,
+    access_token: data.access_token,
+    refresh_token: data.refresh_token || account.refresh_token,
+    expires_in: data.expires_in || account.expires_in,
+    refresh_expires_in:
+      data.refresh_expires_in || account.refresh_expires_in,
+    scope: data.scope || account.scope
+  };
+}
+
+async function fetchTikTokProfile(accessToken) {
+  const response = await fetch(
+    "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,username,bio_description,profile_deep_link,is_verified",
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }
+  );
+
+  const data = await response.json();
+
+  return {
+    response,
+    data
+  };
+}
+
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({
@@ -31,19 +106,25 @@ export default async function handler(req, res) {
       });
     }
 
-    const account = rows[0];
+    let account = rows[0];
 
-    const response = await fetch(
-      "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,username,bio_description,profile_deep_link,is_verified",
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${account.access_token}`
-        }
-      }
+    // Primeira tentativa com o token atual
+    let { response, data } = await fetchTikTokProfile(
+      account.access_token
     );
 
-    const data = await response.json();
+    const tokenInvalid =
+      data?.error?.code === "access_token_invalid" ||
+      data?.error?.code === "access_token_expired";
+
+    // Se expirou ou ficou inválido, renova automaticamente
+    if (!response.ok && tokenInvalid) {
+      account = await refreshTikTokToken(account, sql);
+
+      ({ response, data } = await fetchTikTokProfile(
+        account.access_token
+      ));
+    }
 
     if (!response.ok) {
       return res.status(response.status).json({
