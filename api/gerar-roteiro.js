@@ -1,9 +1,3 @@
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -12,6 +6,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({
+        error: "OPENAI_API_KEY não configurada na Vercel"
+      });
+    }
+
     const {
       tipo,
       tema,
@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       duracao
     } = req.body || {};
 
-    if (!tema) {
+    if (!tema || !tema.trim()) {
       return res.status(400).json({
         error: "Tema do vídeo é obrigatório"
       });
@@ -40,10 +40,11 @@ O roteiro deve:
 - manter ritmo rápido e linguagem natural;
 - ser adequado para narração;
 - evitar enrolação;
-- terminar com uma conclusão ou chamada que incentive retenção/interação;
+- manter boa retenção;
+- terminar com uma conclusão ou chamada para interação;
 - não inventar fatos apresentados como verdade quando o tema exigir informação factual.
 
-Entregue neste formato:
+Entregue exatamente neste formato:
 
 TÍTULO:
 ...
@@ -64,14 +65,73 @@ HASHTAGS:
 ...
     `.trim();
 
-    const response = await client.responses.create({
-      model: "gpt-5.6-luna",
-      input: prompt
-    });
+    const openaiResponse = await fetch(
+      "https://api.openai.com/v1/responses",
+      {
+        method: "POST",
 
-    const roteiro = response.output_text;
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+        },
 
-    if (!roteiro) {
+        body: JSON.stringify({
+          model: "gpt-5.6-luna",
+          input: prompt
+        })
+      }
+    );
+
+    const data = await openaiResponse.json();
+
+    if (!openaiResponse.ok) {
+      console.error(
+        "Erro OpenAI:",
+        JSON.stringify(data)
+      );
+
+      return res.status(openaiResponse.status).json({
+        error: "Erro retornado pela OpenAI",
+        details:
+          data?.error?.message ||
+          "Erro desconhecido da OpenAI"
+      });
+    }
+
+    /*
+      A Responses API devolve o texto dentro
+      da estrutura output -> message -> content.
+    */
+
+    let roteiro = "";
+
+    if (Array.isArray(data.output)) {
+      for (const item of data.output) {
+
+        if (
+          item.type === "message" &&
+          Array.isArray(item.content)
+        ) {
+
+          for (const content of item.content) {
+
+            if (
+              content.type === "output_text" &&
+              content.text
+            ) {
+              roteiro += content.text;
+            }
+          }
+        }
+      }
+    }
+
+    if (!roteiro.trim()) {
+      console.error(
+        "Resposta OpenAI sem texto:",
+        JSON.stringify(data)
+      );
+
       return res.status(500).json({
         error: "A IA não retornou um roteiro"
       });
@@ -79,15 +139,21 @@ HASHTAGS:
 
     return res.status(200).json({
       success: true,
-      roteiro
+      roteiro: roteiro.trim()
     });
 
   } catch (error) {
-    console.error("Erro ao gerar roteiro:", error);
+
+    console.error(
+      "Erro ao gerar roteiro:",
+      error
+    );
 
     return res.status(500).json({
-      error: "Erro ao gerar roteiro",
-      details: error.message
+      error: "Erro interno ao gerar roteiro",
+      details:
+        error?.message ||
+        "Erro desconhecido"
     });
   }
 }
